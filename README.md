@@ -4,7 +4,7 @@ API REST desarrollada con **Flask** para gestión de usuarios y tareas, con pers
 
 ---
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 Redes-PFO2/
@@ -19,14 +19,14 @@ Redes-PFO2/
 
 ---
 
-## ⚙️ Requisitos Previos
+## Requisitos Previos
 
 - **Python 3.8+** instalado
 - **pip** (gestor de paquetes de Python)
 
 ---
 
-## 🚀 Instrucciones de Ejecución
+## Instrucciones de Ejecución
 
 ### 1. Clonar el repositorio
 
@@ -57,7 +57,7 @@ python cliente.py
 
 ---
 
-## 📡 Endpoints de la API
+## Endpoints de la API
 
 | Método | Ruta        | Descripción                              | Autenticación      |
 |--------|-------------|------------------------------------------|---------------------|
@@ -91,7 +91,7 @@ curl -u juan:1234 http://127.0.0.1:5000/tareas
 
 ---
 
-## 🧪 Pruebas con el Cliente de Consola
+## Pruebas con el Cliente de Consola
 
 Al ejecutar `cliente.py`, se presenta un menú interactivo:
 
@@ -113,7 +113,7 @@ Selecciona una opción:
 
 ---
 
-## 📝 Respuestas Conceptuales
+## Respuestas Conceptuales
 
 ### ¿Por qué hashear contraseñas?
 
@@ -136,7 +136,7 @@ En este proyecto se usa `werkzeug.security.generate_password_hash()` que impleme
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **Python 3** — Lenguaje de programación
 - **Flask** — Framework web para la API REST
