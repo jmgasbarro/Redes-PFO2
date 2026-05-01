@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="API REST con Flask y SQLite - Trabajo Práctico PFO2 de Programación sobre Redes">
+    <title>Redes PFO2 - API REST con Flask</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a12;
+            --surface: #12121e;
+            --surface2: #1a1a2e;
+            --border: rgba(139, 92, 246, 0.15);
+            --text: #e2e2f0;
+            --text-muted: #8888a8;
+            --accent: #8b5cf6;
+            --accent2: #06b6d4;
+            --gradient: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            --glow: 0 0 30px rgba(139, 92, 246, 0.15);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* --- NAV --- */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            background: rgba(10, 10, 18, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+        .nav-inner {
+            max-width: 1100px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 60px;
+        }
+        .nav-logo { font-weight: 800; font-size: 1.1rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color .2s; }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* --- HERO --- */
+        .hero {
+            min-height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 6rem 1.5rem 4rem;
+            position: relative;
+        }
+        .hero::before {
+            content: ''; position: absolute; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(139,92,246,.12), transparent 70%);
+            top: 10%; left: 50%; transform: translateX(-50%); pointer-events: none;
+        }
+        .badge {
+            display: inline-block; padding: .35rem 1rem; border-radius: 50px;
+            font-size: .78rem; font-weight: 600; letter-spacing: .5px;
+            background: rgba(139,92,246,.12); color: var(--accent); border: 1px solid rgba(139,92,246,.25);
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; line-height: 1.15; margin-bottom: 1.2rem; }
+        .hero h1 span { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { max-width: 580px; color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2rem; }
+        .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+        .btn {
+            padding: .7rem 1.6rem; border-radius: 10px; font-weight: 600; font-size: .9rem;
+            text-decoration: none; transition: transform .2s, box-shadow .2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 4px 20px rgba(139,92,246,.3); }
+        .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+        /* --- SECTIONS --- */
+        section { max-width: 1100px; margin: 0 auto; padding: 5rem 1.5rem; }
+        .section-label { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: .6rem; }
+        .section-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 2.5rem; }
+
+        /* --- CARDS GRID --- */
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+            padding: 2rem; transition: transform .25s, box-shadow .25s;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: var(--glow); }
+        .card-icon { font-size: 2rem; margin-bottom: 1rem; }
+        .card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: .5rem; }
+        .card p { color: var(--text-muted); font-size: .92rem; }
+
+        /* --- ENDPOINT TABLE --- */
+        .table-wrap {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+            overflow: hidden; margin-bottom: 2rem;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: var(--surface2); text-align: left; padding: .9rem 1.2rem; font-size: .82rem; text-transform: uppercase; letter-spacing: .8px; color: var(--text-muted); }
+        td { padding: .9rem 1.2rem; border-top: 1px solid var(--border); font-size: .92rem; }
+        .method { font-family: 'Fira Code', monospace; font-weight: 600; font-size: .82rem; padding: .2rem .55rem; border-radius: 6px; }
+        .method-post { background: rgba(34,197,94,.12); color: #22c55e; }
+        .method-get { background: rgba(59,130,246,.12); color: #3b82f6; }
+        .route { font-family: 'Fira Code', monospace; color: var(--accent2); }
+
+        /* --- CODE BLOCK --- */
+        .code-block {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1.5rem; margin: 1.2rem 0; overflow-x: auto;
+        }
+        .code-block code { font-family: 'Fira Code', monospace; font-size: .85rem; color: #c4b5fd; line-height: 1.8; white-space: pre; }
+        .code-label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--text-muted); margin-bottom: .6rem; }
+
+        /* --- CONCEPTUAL --- */
+        .concept {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+            padding: 2rem; margin-bottom: 1.5rem;
+        }
+        .concept h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .8rem; display: flex; align-items: center; gap: .6rem; }
+        .concept ul { padding-left: 1.3rem; color: var(--text-muted); }
+        .concept li { margin-bottom: .4rem; font-size: .92rem; }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center; padding: 3rem 1.5rem; border-top: 1px solid var(--border);
+            color: var(--text-muted); font-size: .85rem;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 640px) {
+            .nav-links { display: none; }
+            .cards { grid-template-columns: 1fr; }
+            table { font-size: .82rem; }
+            th, td { padding: .7rem .8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-inner">
+        <div class="nav-logo">Redes PFO2</div>
+        <ul class="nav-links">
+            <li><a href="#endpoints">Endpoints</a></li>
+            <li><a href="#setup">Instalación</a></li>
+            <li><a href="#conceptos">Conceptos</a></li>
+            <li><a href="https://github.com/jmgasbarro/Redes-PFO2" target="_blank">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+    <span class="badge">Programación sobre Redes — PFO2</span>
+    <h1>API REST con <span>Flask &amp; SQLite</span></h1>
+    <p>Servidor con registro de usuarios, inicio de sesión con contraseñas hasheadas y gestión de tareas. Cliente de consola incluido.</p>
+    <div class="btn-group">
+        <a href="https://github.com/jmgasbarro/Redes-PFO2" class="btn btn-primary" target="_blank">Ver Código Fuente</a>
+        <a href="#setup" class="btn btn-secondary">Cómo Ejecutar</a>
+    </div>
+</header>
+
+<!-- STACK -->
+<section>
+    <p class="section-label">Tecnologías</p>
+    <h2 class="section-title">Stack del Proyecto</h2>
+    <div class="cards">
+        <div class="card">
+            <div class="card-icon">🐍</div>
+            <h3>Python 3</h3>
+            <p>Lenguaje principal para el servidor y el cliente de consola.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">🌶️</div>
+            <h3>Flask</h3>
+            <p>Framework web ligero para construir la API REST con endpoints JSON y HTML.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">🗄️</div>
+            <h3>SQLite</h3>
+            <p>Base de datos embebida para persistir usuarios. Sin configuración externa.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">🔒</div>
+            <h3>Werkzeug</h3>
+            <p>Hashing de contraseñas con <code>scrypt</code> + salt aleatorio. Nunca texto plano.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ENDPOINTS -->
+<section id="endpoints">
+    <p class="section-label">API</p>
+    <h2 class="section-title">Endpoints Disponibles</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Método</th>
+                    <th>Ruta</th>
+                    <th>Descripción</th>
+                    <th>Auth</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="method method-post">POST</span></td>
+                    <td class="route">/registro</td>
+                    <td>Registra un nuevo usuario con contraseña hasheada</td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td><span class="method method-post">POST</span></td>
+                    <td class="route">/login</td>
+                    <td>Verifica credenciales del usuario</td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td><span class="method method-get">GET</span></td>
+                    <td class="route">/tareas</td>
+                    <td>Muestra página HTML de bienvenida</td>
+                    <td>Basic Auth</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="code-label">Ejemplo — Registrar usuario</p>
+    <div class="code-block"><code>curl -X POST http://127.0.0.1:5000/registro \<br>&nbsp;&nbsp;-H "Content-Type: application/json" \<br>&nbsp;&nbsp;-d '{"usuario": "juan", "contraseña": "1234"}'</code></div>
+
+    <p class="code-label">Ejemplo — Iniciar sesión</p>
+    <div class="code-block"><code>curl -X POST http://127.0.0.1:5000/login \<br>&nbsp;&nbsp;-H "Content-Type: application/json" \<br>&nbsp;&nbsp;-d '{"usuario": "juan", "contraseña": "1234"}'</code></div>
+
+    <p class="code-label">Ejemplo — Ver tareas (con auth)</p>
+    <div class="code-block"><code>curl -u juan:1234 http://127.0.0.1:5000/tareas</code></div>
+</section>
+
+<!-- SETUP -->
+<section id="setup">
+    <p class="section-label">Guía</p>
+    <h2 class="section-title">Instalación y Ejecución</h2>
+    <div class="cards" style="grid-template-columns: 1fr;">
+        <div class="card">
+            <h3>1. Clonar el repositorio</h3>
+            <div class="code-block"><code>git clone https://github.com/jmgasbarro/Redes-PFO2.git<br>cd Redes-PFO2</code></div>
+
+            <h3>2. Instalar dependencias</h3>
+            <div class="code-block"><code>pip install -r requirements.txt</code></div>
+
+            <h3>3. Iniciar el servidor <span style="color:var(--text-muted);font-weight:400;">(Terminal 1)</span></h3>
+            <div class="code-block"><code>python servidor.py</code></div>
+            <p style="color:var(--text-muted);margin: .5rem 0 1.5rem;">El servidor se ejecuta en <code style="color:var(--accent2);">http://127.0.0.1:5000</code></p>
+
+            <h3>4. Ejecutar el cliente <span style="color:var(--text-muted);font-weight:400;">(Terminal 2)</span></h3>
+            <div class="code-block"><code>python cliente.py</code></div>
+            <p style="color:var(--text-muted);margin-top:.5rem;">Se abrirá un menú interactivo con opciones para registrarse, loguearse y ver tareas.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CONCEPTOS -->
+<section id="conceptos">
+    <p class="section-label">Teoría</p>
+    <h2 class="section-title">Respuestas Conceptuales</h2>
+
+    <div class="concept">
+        <h3>🔐 ¿Por qué hashear contraseñas?</h3>
+        <ul>
+            <li><strong>Protección ante filtraciones:</strong> si un atacante accede a la base de datos, solo encuentra hashes irreversibles.</li>
+            <li><strong>Irreversibilidad:</strong> a diferencia del cifrado, el hashing es una función de un solo sentido.</li>
+            <li><strong>Salting automático:</strong> Werkzeug agrega un salt aleatorio, haciendo que contraseñas iguales generen hashes distintos.</li>
+            <li><strong>Cumplimiento normativo:</strong> almacenar contraseñas en texto plano viola regulaciones de protección de datos.</li>
+        </ul>
+    </div>
+
+    <div class="concept">
+        <h3>🗄️ Ventajas de usar SQLite en este proyecto</h3>
+        <ul>
+            <li><strong>Sin servidor externo:</strong> base de datos embebida en un solo archivo (<code>usuarios.db</code>).</li>
+            <li><strong>Cero configuración:</strong> no se necesitan credenciales, puertos ni servicios adicionales.</li>
+            <li><strong>Portabilidad:</strong> el archivo <code>.db</code> se copia y mueve fácilmente.</li>
+            <li><strong>Ideal para prototipos:</strong> rendimiento suficiente sin complejidad de una DB cliente-servidor.</li>
+            <li><strong>Nativo en Python:</strong> el módulo <code>sqlite3</code> viene integrado en la biblioteca estándar.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ARQUITECTURA -->
+<section>
+    <p class="section-label">Estructura</p>
+    <h2 class="section-title">Arquitectura del Proyecto</h2>
+    <div class="code-block">
+<code>Redes-PFO2/
+├── servidor.py          # API Flask (servidor)
+├── cliente.py           # Cliente de consola
+├── requirements.txt     # Dependencias
+├── templates/
+│   └── tareas.html      # Página HTML de bienvenida
+├── usuarios.db          # Base de datos (se genera al ejecutar)
+├── index.html           # Documentación (GitHub Pages)
+└── README.md</code>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>Redes — PFO2 &copy; 2026 &middot; Hecho con Flask, SQLite y Werkzeug</p>
+</footer>
+
+</body>
+</html>
