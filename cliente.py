@@ -9,17 +9,22 @@ Permite al usuario:
 """
 
 import requests
-import getpass
+import webbrowser
+import tempfile
+import os
 
 # URL base del servidor Flask
 URL_BASE = "http://127.0.0.1:5000"
+
+# Variable global para guardar la sesión activa
+sesion_activa = None  # Guardará {"usuario": ..., "contraseña": ...} tras un login exitoso
 
 
 def registrar_usuario():
     """Solicita datos al usuario y envía una petición POST /registro."""
     print("\n--- Registro de Usuario ---")
     nombre = input("Nombre de usuario: ").strip()
-    contrasena = getpass.getpass("Contraseña: ")
+    contrasena = input("Contraseña: ").strip()
 
     if not nombre or not contrasena:
         print("[!] Ambos campos son obligatorios.")
@@ -30,21 +35,28 @@ def registrar_usuario():
             f"{URL_BASE}/registro",
             json={"usuario": nombre, "contraseña": contrasena}
         )
-        datos = respuesta.json()
+
+        try:
+            datos = respuesta.json()
+        except Exception:
+            print(f"[!] Respuesta inesperada del servidor (codigo {respuesta.status_code})")
+            return
 
         if respuesta.status_code == 201:
-            print(f"[✓] {datos['mensaje']}")
+            print(f"[OK] {datos['mensaje']}")
         else:
-            print(f"[✗] Error: {datos.get('error', 'Error desconocido')}")
+            print(f"[X] Error: {datos.get('error', 'Error desconocido')}")
     except requests.ConnectionError:
-        print("[✗] No se pudo conectar con el servidor. ¿Está corriendo?")
+        print("[X] No se pudo conectar con el servidor. Esta corriendo?")
 
 
 def iniciar_sesion():
     """Solicita datos al usuario y envía una petición POST /login."""
-    print("\n--- Inicio de Sesión ---")
+    global sesion_activa
+
+    print("\n--- Inicio de Sesion ---")
     nombre = input("Nombre de usuario: ").strip()
-    contrasena = getpass.getpass("Contraseña: ")
+    contrasena = input("Contraseña: ").strip()
 
     if not nombre or not contrasena:
         print("[!] Ambos campos son obligatorios.")
@@ -55,28 +67,46 @@ def iniciar_sesion():
             f"{URL_BASE}/login",
             json={"usuario": nombre, "contraseña": contrasena}
         )
-        datos = respuesta.json()
+
+        try:
+            datos = respuesta.json()
+        except Exception:
+            print(f"[!] Respuesta inesperada del servidor (codigo {respuesta.status_code})")
+            return
 
         if respuesta.status_code == 200:
-            print(f"[✓] {datos['mensaje']}")
+            # Guardar las credenciales para usarlas en /tareas
+            sesion_activa = {"usuario": nombre, "contraseña": contrasena}
+            print(f"[OK] {datos['mensaje']}")
         else:
-            print(f"[✗] Error: {datos.get('error', 'Error desconocido')}")
+            print(f"[X] Error: {datos.get('error', 'Error desconocido')}")
     except requests.ConnectionError:
-        print("[✗] No se pudo conectar con el servidor. ¿Está corriendo?")
+        print("[X] No se pudo conectar con el servidor. Esta corriendo?")
 
 
 def ver_tareas():
     """
-    Solicita credenciales y envía una petición GET /tareas con HTTP Basic Auth.
-    Muestra el HTML devuelto por el servidor.
+    Envía una petición GET /tareas con HTTP Basic Auth.
+    Si ya se inició sesión, usa esas credenciales.
+    Si no, las pide manualmente.
     """
-    print("\n--- Ver Tareas (requiere autenticación) ---")
-    nombre = input("Nombre de usuario: ").strip()
-    contrasena = getpass.getpass("Contraseña: ")
+    global sesion_activa
 
-    if not nombre or not contrasena:
-        print("[!] Ambos campos son obligatorios.")
-        return
+    if sesion_activa:
+        # Ya hay una sesión activa, usar esas credenciales
+        nombre = sesion_activa["usuario"]
+        contrasena = sesion_activa["contraseña"]
+        print(f"\n--- Accediendo a tareas como '{nombre}' ---")
+    else:
+        # No hay sesión, pedir credenciales
+        print("\n--- Ver Tareas (requiere autenticacion) ---")
+        print("[!] No hay sesion activa. Ingresa tus credenciales:")
+        nombre = input("Nombre de usuario: ").strip()
+        contrasena = input("Contraseña: ").strip()
+
+        if not nombre or not contrasena:
+            print("[!] Ambos campos son obligatorios.")
+            return
 
     try:
         respuesta = requests.get(
@@ -85,28 +115,39 @@ def ver_tareas():
         )
 
         if respuesta.status_code == 200:
-            print("[✓] Acceso concedido. Contenido HTML recibido:\n")
-            print(respuesta.text)
+            # Guardar el HTML en un archivo temporal y abrirlo en el navegador
+            archivo = os.path.join(tempfile.gettempdir(), "tareas_bienvenida.html")
+            with open(archivo, "w", encoding="utf-8") as f:
+                f.write(respuesta.text)
+            webbrowser.open(f"file:///{archivo}")
+            print("[OK] Pagina de bienvenida abierta en el navegador.")
         else:
-            datos = respuesta.json()
-            print(f"[✗] Error: {datos.get('error', 'Error desconocido')}")
+            try:
+                datos = respuesta.json()
+                print(f"[X] Error: {datos.get('error', 'Error desconocido')}")
+            except Exception:
+                print(f"[X] Error del servidor (codigo {respuesta.status_code})")
     except requests.ConnectionError:
-        print("[✗] No se pudo conectar con el servidor. ¿Está corriendo?")
+        print("[X] No se pudo conectar con el servidor. Esta corriendo?")
 
 
 def menu():
     """Muestra el menú principal del cliente y gestiona la selección."""
     while True:
         print("\n" + "=" * 40)
-        print("  Cliente API - Gestión de Tareas")
+        print("  Cliente API - Gestion de Tareas")
         print("=" * 40)
         print("  1. Registrar usuario")
-        print("  2. Iniciar sesión")
-        print("  3. Ver tareas")
+        print("  2. Iniciar sesion")
+        print(f"  3. Ver tareas", end="")
+        if sesion_activa:
+            print(f"  (sesion: {sesion_activa['usuario']})")
+        else:
+            print()
         print("  4. Salir")
         print("-" * 40)
 
-        opcion = input("Selecciona una opción: ").strip()
+        opcion = input("Selecciona una opcion: ").strip()
 
         if opcion == "1":
             registrar_usuario()
@@ -115,10 +156,10 @@ def menu():
         elif opcion == "3":
             ver_tareas()
         elif opcion == "4":
-            print("\n¡Hasta luego!")
+            print("\nHasta luego!")
             break
         else:
-            print("[!] Opción no válida. Intenta de nuevo.")
+            print("[!] Opcion no valida. Intenta de nuevo.")
 
 
 if __name__ == "__main__":
