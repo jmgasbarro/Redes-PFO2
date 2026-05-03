@@ -101,7 +101,7 @@ Al ejecutar `servidor.py`, se presenta un menú interactivo:
 Al ejecutar `cliente.py`, se presenta un menú interactivo:
 
 
-![Menu cliente](img/crear_usuario.png)
+![Menu cliente](img/menu_cliente.png)
 
 
 1. **Opción 1**: Registra un nuevo usuario proporcionando nombre y contraseña.
