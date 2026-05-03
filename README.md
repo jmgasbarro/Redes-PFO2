@@ -94,15 +94,15 @@ curl -u manu4:1234 http://127.0.0.1:5000/tareas
 ## Pruebas con el Cliente de Consola
 Al ejecutar `servidor.py`, se presenta un menú interactivo:
 
-```bash
+
 ![Iniciar servidor](img/iniciar_servidor.png)
-```
+
 
 Al ejecutar `cliente.py`, se presenta un menú interactivo:
 
-```bash
+
 ![Menu cliente](img/cliente.png)
-```
+
 
 1. **Opción 1**: Registra un nuevo usuario proporcionando nombre y contraseña.
 ![Crear usuario](img/crear_usuario.png)
