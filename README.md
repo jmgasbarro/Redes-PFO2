@@ -72,7 +72,7 @@ python cliente.py
 ```bash
 curl -X POST http://127.0.0.1:5000/registro \
   -H "Content-Type: application/json" \
-  -d '{"usuario": "juan", "contraseña": "1234"}'
+  -d '{"usuario": "manu4", "contraseña": "1234"}'
 ```
 
 **Iniciar sesión:**
@@ -80,36 +80,42 @@ curl -X POST http://127.0.0.1:5000/registro \
 ```bash
 curl -X POST http://127.0.0.1:5000/login \
   -H "Content-Type: application/json" \
-  -d '{"usuario": "juan", "contraseña": "1234"}'
+  -d '{"usuario": "manu4", "contraseña": "1234"}'
 ```
 
 **Ver tareas (con autenticación):**
 
 ```bash
-curl -u juan:1234 http://127.0.0.1:5000/tareas
+curl -u manu4:1234 http://127.0.0.1:5000/tareas
 ```
 
 ---
 
 ## Pruebas con el Cliente de Consola
+Al ejecutar `servidor.py`, se presenta un menú interactivo:
+
+```bash
+![Iniciar servidor](img/iniciar_servidor.png)
+```
 
 Al ejecutar `cliente.py`, se presenta un menú interactivo:
 
-```
-========================================
-  Cliente API - Gestión de Tareas
-========================================
-  1. Registrar usuario
-  2. Iniciar sesión
-  3. Ver tareas
-  4. Salir
-----------------------------------------
-Selecciona una opción:
+```bash
+![Menu cliente](img/cliente.png)
 ```
 
 1. **Opción 1**: Registra un nuevo usuario proporcionando nombre y contraseña.
+![Crear usuario](img/crear_usuario.png)
 2. **Opción 2**: Verifica credenciales enviando un POST a `/login`.
+![Iniciar sesión](img/iniciar_sesion.png)
 3. **Opción 3**: Accede a `/tareas` usando HTTP Basic Auth y muestra el HTML.
+![Ver tareas](img/ver_tareas.png)
+
+**Al elegir la opción 3, se accede a la página HTML con el cartel de BIENVENIDO y las tareas cargadas**
+![Bienvenido](img/bienvenido.png)
+
+4. **Opción 4**: Sale del programa.
+![Salir](img/salir.png)
 
 ---
 
