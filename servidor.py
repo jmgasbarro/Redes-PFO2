@@ -6,7 +6,7 @@ Endpoints:
   POST /login     -> Verifica credenciales y devuelve un mensaje de éxito.
   GET  /tareas    -> Muestra una página HTML de bienvenida (requiere autenticación básica).
 
-Persistencia: SQLite (archivo usuarios.db).
+Base de Datos: SQLite (archivo usuarios.db).
 """
 
 import sqlite3
@@ -15,9 +15,9 @@ from flask import Flask, request, jsonify, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
-# ---------------------------------------------------------------------------
+
 # Configuración de la aplicación
-# ---------------------------------------------------------------------------
+
 app = Flask(__name__)
 
 # Ruta de la base de datos SQLite (mismo directorio que el script)
@@ -25,9 +25,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "usuarios.db")
 
 
-# ---------------------------------------------------------------------------
 # Funciones auxiliares para la base de datos
-# ---------------------------------------------------------------------------
 
 def obtener_conexion():
     """Abre y devuelve una conexión a la base de datos SQLite."""
@@ -50,9 +48,7 @@ def inicializar_db():
     conexion.close()
 
 
-# ---------------------------------------------------------------------------
 # Decorador de autenticación básica (HTTP Basic Auth)
-# ---------------------------------------------------------------------------
 
 def requiere_autenticacion(f):
     """
@@ -83,10 +79,7 @@ def requiere_autenticacion(f):
 
     return decorador
 
-
-# ---------------------------------------------------------------------------
 # Endpoints
-# ---------------------------------------------------------------------------
 
 @app.route("/registro", methods=["POST"])
 def registro():
@@ -167,14 +160,12 @@ def tareas(usuario_autenticado):
     return render_template("tareas.html", usuario=usuario_autenticado)
 
 
-# ---------------------------------------------------------------------------
 # Punto de entrada
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     inicializar_db()
     print("=" * 50)
     print("  Servidor Flask iniciado")
-    print("  http://127.0.0.1:5000")
+    print("  http://localhost:5000")
     print("=" * 50)
     app.run(debug=True, host="0.0.0.0", port=5000)

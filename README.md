@@ -31,7 +31,7 @@ Redes-PFO2/
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/Redes-PFO2.git
+git clone https://github.com/jmgasbarro/Redes-PFO2.git
 cd Redes-PFO2
 ```
 
@@ -44,15 +44,15 @@ pip install -r requirements.txt
 ### 3. Iniciar el servidor
 
 ```bash
-python servidor.py
+py servidor.py
 ```
 
-El servidor se ejecutará en `http://127.0.0.1:5000`.
+El servidor se ejecutará en `http://localhost:5000`.
 
 ### 4. Ejecutar el cliente (en otra terminal)
 
 ```bash
-python cliente.py
+py cliente.py
 ```
 
 ---
@@ -70,7 +70,7 @@ python cliente.py
 **Registrar un usuario:**
 
 ```bash
-curl -X POST http://127.0.0.1:5000/registro \
+curl -X POST http://localhost:5000/registro \
   -H "Content-Type: application/json" \
   -d '{"usuario": "manu4", "contraseña": "1234"}'
 ```
@@ -78,7 +78,7 @@ curl -X POST http://127.0.0.1:5000/registro \
 **Iniciar sesión:**
 
 ```bash
-curl -X POST http://127.0.0.1:5000/login \
+curl -X POST http://localhost:5000/login \
   -H "Content-Type: application/json" \
   -d '{"usuario": "manu4", "contraseña": "1234"}'
 ```
@@ -86,7 +86,7 @@ curl -X POST http://127.0.0.1:5000/login \
 **Ver tareas (con autenticación):**
 
 ```bash
-curl -u manu4:1234 http://127.0.0.1:5000/tareas
+curl -u manu4:1234 http://localhost:5000/tareas
 ```
 
 ---

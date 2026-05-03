@@ -14,7 +14,7 @@ import tempfile
 import os
 
 # URL base del servidor Flask
-URL_BASE = "http://127.0.0.1:5000"
+URL_BASE = "http://localhost:5000"
 
 # Variable global para guardar la sesión activa
 sesion_activa = None  # Guardará {"usuario": ..., "contraseña": ...} tras un login exitoso
