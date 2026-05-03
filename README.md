@@ -101,18 +101,18 @@ Al ejecutar `servidor.py`, se presenta un menú interactivo:
 Al ejecutar `cliente.py`, se presenta un menú interactivo:
 
 
-![Menu cliente](img/cliente.png)
+![Menu cliente](img/crear_usuario.png)
 
 
 1. **Opción 1**: Registra un nuevo usuario proporcionando nombre y contraseña.
 ![Crear usuario](img/crear_usuario.png)
 2. **Opción 2**: Verifica credenciales enviando un POST a `/login`.
-![Iniciar sesión](img/iniciar_sesion.png)
+![Iniciar sesión](img/inicio_sesion.png)
 3. **Opción 3**: Accede a `/tareas` usando HTTP Basic Auth y muestra el HTML.
 ![Ver tareas](img/ver_tareas.png)
 
 **Al elegir la opción 3, se accede a la página HTML con el cartel de BIENVENIDO y las tareas cargadas**
-![Bienvenido](img/bienvenido.png)
+![Bienvenido](img/cartel_bienvenida.png)
 
 4. **Opción 4**: Sale del programa.
 ![Salir](img/salir.png)
