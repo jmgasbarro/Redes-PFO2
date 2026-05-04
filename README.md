@@ -2,6 +2,8 @@
 
 API REST desarrollada con **Flask** para gestión de usuarios y tareas, con persistencia en **SQLite** y contraseñas protegidas mediante **hashing**.
 
+**Documentación online:** [https://jmgasbarro.github.io/Redes-PFO2/](https://jmgasbarro.github.io/Redes-PFO2/)
+
 ---
 
 ## Estructura del Proyecto
